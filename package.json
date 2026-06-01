@@ -1,0 +1,24 @@
+{
+  "name": "data-scale-portfolio",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rhayar-dr/data-scale-portfolio.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Rhayar-dr/data-scale-portfolio/issues"
+  },
+  "homepage": "https://github.com/Rhayar-dr/data-scale-portfolio#readme",
+  "dependencies": {
+    "@cloudflare/kv-asset-handler": "^0.5.0"
+  }
+}

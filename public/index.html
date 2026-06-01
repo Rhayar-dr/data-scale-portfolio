@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Data Scale — Consultoria em Dados, Cloud e IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<script src="https://unpkg.com/lucide@0.456.0/dist/umd/lucide.min.js"></script>
+<style>
+  :root {
+    --bg: #FAFAFA;
+    --surface: #FFFFFF;
+    --ink: #1A1A1A;
+    --ink-soft: #5B6068;
+    --ink-faint: #8A8F97;
+    --line: rgba(26, 26, 26, 0.10);
+    --line-soft: rgba(26, 26, 26, 0.06);
+    --blue: #0B3D91;
+    --blue-deep: #082C68;
+    --blue-tint: rgba(11, 61, 145, 0.06);
+    --cyan: #0E8F86;
+    --cyan-tint: rgba(14, 143, 134, 0.08);
+    --maxw: 1200px;
+    --r: 14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  .eyebrow {
+    font-family: "Space Mono", monospace;
+    font-size: 12.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--blue);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .eyebrow .num { color: var(--ink-faint); }
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--blue);
+    opacity: 0.6;
+  }
+
+  h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; }
+
+  .section { padding: clamp(72px, 9vw, 128px) 0; }
+  .section-head { max-width: 720px; }
+  .section-head h2 {
+    font-size: clamp(28px, 3.6vw, 42px);
+    margin: 20px 0 0;
+  }
+  .section-head p {
+    color: var(--ink-soft);
+    font-size: clamp(17px, 1.5vw, 19px);
+    margin-top: 18px;
+    text-wrap: pretty;
+  }
+
+  header.nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(250, 250, 250, 0.82);
+    backdrop-filter: saturate(180%) blur(14px);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 70px;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand .mark {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 22px;
+  }
+  .brand .mark span {
+    width: 4px;
+    border-radius: 2px;
+    background: var(--blue);
+  }
+  .brand .mark span:nth-child(1) { height: 9px; opacity: 0.45; }
+  .brand .mark span:nth-child(2) { height: 15px; opacity: 0.7; }
+  .brand .mark span:nth-child(3) { height: 22px; background: var(--cyan); }
+  .brand .name {
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: -0.02em;
+  }
+  .nav-links { display: flex; align-items: center; gap: 28px; }
+  .nav-links .link {
+    color: var(--ink-soft);
+    font-size: 15px;
+    font-weight: 500;
+    transition: color 0.18s;
+  }
+  .nav-links .link:hover { color: var(--ink); }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 11px 20px;
+    border-radius: 999px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+  .btn-primary {
+    background: var(--blue);
+    color: #fff;
+  }
+  .btn-primary:hover { background: var(--blue-deep); transform: translateY(-1px); }
+  .btn-ghost {
+    border: 1px solid var(--line);
+    color: var(--ink);
+    background: var(--surface);
+  }
+  .btn-ghost:hover { border-color: var(--blue); color: var(--blue); }
+  .btn svg { width: 16px; height: 16px; }
+
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(88px, 12vw, 156px) 0 clamp(72px, 10vw, 120px);
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .hero-bg .glow {
+    position: absolute;
+    top: -240px;
+    right: -180px;
+    width: 760px;
+    height: 760px;
+    background: radial-gradient(circle at center, rgba(11,61,145,0.10), rgba(14,143,134,0.05) 45%, transparent 70%);
+    filter: blur(8px);
+  }
+  .hero-bg .dots {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(26,26,26,0.06) 1px, transparent 1px);
+    background-size: 28px 28px;
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 72%);
+    mask-image: linear-gradient(to bottom, #000 0%, transparent 72%);
+  }
+  .hero-inner { position: relative; z-index: 1; max-width: 880px; }
+  .hero h1 {
+    font-size: clamp(38px, 6vw, 68px);
+    font-weight: 800;
+    margin: 28px 0 0;
+    letter-spacing: -0.035em;
+  }
+  .hero h1 .accent { color: var(--blue); }
+  .hero .sub {
+    font-size: clamp(18px, 1.9vw, 21px);
+    color: var(--ink-soft);
+    margin-top: 26px;
+    max-width: 640px;
+    text-wrap: pretty;
+  }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 38px; }
+
+  .hero-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    margin-top: 64px;
+    padding-top: 36px;
+    border-top: 1px solid var(--line);
+    max-width: 760px;
+  }
+  .hero-stats .stat .k {
+    font-size: 15px;
+    color: var(--ink);
+    font-weight: 700;
+  }
+  .hero-stats .stat .v {
+    font-size: 14px;
+    color: var(--ink-soft);
+    margin-top: 2px;
+  }
+
+  .lead {
+    border-top: 1px solid var(--line);
+  }
+  .lead .grid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: clamp(32px, 6vw, 90px);
+    align-items: start;
+  }
+  .lead .big {
+    font-size: clamp(24px, 2.8vw, 33px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.28;
+    text-wrap: pretty;
+  }
+  .lead .big em {
+    font-style: normal;
+    color: var(--blue);
+  }
+  .lead .body { color: var(--ink-soft); font-size: 18px; }
+  .lead .body p + p { margin-top: 16px; }
+
+  .services { background: var(--surface); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .svc-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 56px;
+  }
+  .card {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    padding: 30px 28px;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover {
+    border-color: rgba(11,61,145,0.35);
+    transform: translateY(-3px);
+    box-shadow: 0 14px 34px -22px rgba(11,61,145,0.4);
+  }
+  .card .ico {
+    width: 46px;
+    height: 46px;
+    border-radius: 11px;
+    background: var(--blue-tint);
+    color: var(--blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 22px;
+  }
+  .card .ico svg { width: 22px; height: 22px; }
+  .card h3 { font-size: 19.5px; font-weight: 700; }
+  .card p { color: var(--ink-soft); font-size: 15.5px; margin-top: 10px; flex: 1; text-wrap: pretty; }
+  .tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 20px; }
+  .tag {
+    font-family: "Space Mono", monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.02em;
+    color: var(--ink-soft);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 4px 10px;
+    border-radius: 7px;
+  }
+
+  .card.wide {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    align-items: center;
+    gap: 32px;
+    padding: 34px 32px;
+  }
+  .card.wide .ico {
+    margin-bottom: 0;
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    background: var(--cyan-tint);
+    color: var(--cyan);
+  }
+  .card.wide .ico svg { width: 26px; height: 26px; }
+  .card.wide .wide-body { flex: 1; }
+  .card.wide p { margin-top: 8px; flex: none; max-width: 640px; }
+  .card.wide .tags { margin-top: 0; flex-shrink: 0; max-width: 320px; justify-content: flex-end; }
+
+  .pillars {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-top: 56px;
+  }
+  .pillar {
+    padding: 28px 24px 30px;
+    border-radius: var(--r);
+    border: 1px solid var(--line);
+    background: var(--surface);
+  }
+  .pillar .ico {
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--blue);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+  .pillar .ico svg { width: 20px; height: 20px; }
+  .pillar .pnum {
+    font-family: "Space Mono", monospace;
+    font-size: 12px;
+    color: var(--ink-faint);
+  }
+  .pillar h3 { font-size: 18px; margin: 8px 0 10px; font-weight: 700; }
+  .pillar p { color: var(--ink-soft); font-size: 15px; text-wrap: pretty; }
+
+  .tech { border-top: 1px solid var(--line); background: var(--surface); }
+  .tech .wrap { padding-top: clamp(54px,7vw,80px); padding-bottom: clamp(54px,7vw,80px); }
+  .tech-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .tech-head .label { font-family: "Space Mono", monospace; font-size: 13px; color: var(--ink-soft); letter-spacing: 0.06em; }
+  .tech-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 30px;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 11px 18px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--bg);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .chip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--cyan); }
+  .chip:nth-child(even) .dot { background: var(--blue); }
+
+  .profiles {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 56px;
+  }
+  .profile {
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    padding: 32px 28px;
+    background: var(--surface);
+    position: relative;
+  }
+  .profile .ico {
+    width: 44px; height: 44px;
+    border-radius: 11px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--blue-tint); color: var(--blue);
+    margin-bottom: 22px;
+  }
+  .profile .ico svg { width: 21px; height: 21px; }
+  .profile h3 { font-size: 18.5px; font-weight: 700; }
+  .profile p { color: var(--ink-soft); font-size: 15.5px; margin-top: 10px; text-wrap: pretty; }
+
+  .cta {
+    background: var(--blue);
+    color: #fff;
+    border-radius: 22px;
+    padding: clamp(48px, 7vw, 84px) clamp(32px, 6vw, 72px);
+    position: relative;
+    overflow: hidden;
+    margin: clamp(40px,6vw,80px) 0;
+  }
+  .cta .cta-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 85% 15%, rgba(14,143,134,0.5), transparent 55%);
+    pointer-events: none;
+  }
+  .cta-inner { position: relative; z-index: 1; max-width: 720px; }
+  .cta .eyebrow { color: rgba(255,255,255,0.7); }
+  .cta .eyebrow::before { background: rgba(255,255,255,0.5); }
+  .cta h2 {
+    font-size: clamp(28px, 4vw, 46px);
+    font-weight: 800;
+    margin: 20px 0 0;
+    letter-spacing: -0.03em;
+  }
+  .cta p { color: rgba(255,255,255,0.82); font-size: 18px; margin-top: 18px; max-width: 560px; text-wrap: pretty; }
+  .cta-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 36px; }
+  .cta .btn-white { background: #fff; color: var(--blue); }
+  .cta .btn-white:hover { background: #eef2fb; transform: translateY(-1px); }
+  .cta .btn-outline { border: 1px solid rgba(255,255,255,0.35); color: #fff; }
+  .cta .btn-outline:hover { border-color: #fff; background: rgba(255,255,255,0.08); }
+
+  footer.foot { border-top: 1px solid var(--line); }
+  .foot-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 36px 0;
+  }
+  .foot .tagline { color: var(--ink-soft); font-size: 14.5px; }
+  .foot .copy { color: var(--ink-faint); font-size: 13.5px; font-family: "Space Mono", monospace; }
+
+  @media (max-width: 940px) {
+    .svc-grid { grid-template-columns: repeat(2, 1fr); }
+    .pillars { grid-template-columns: repeat(2, 1fr); }
+    .profiles { grid-template-columns: 1fr; }
+    .lead .grid { grid-template-columns: 1fr; }
+    .card.wide { flex-direction: column; align-items: flex-start; }
+    .card.wide .tags { justify-content: flex-start; max-width: none; }
+  }
+  @media (max-width: 620px) {
+    body { font-size: 16px; }
+    .wrap { padding: 0 22px; }
+    .svc-grid { grid-template-columns: 1fr; }
+    .pillars { grid-template-columns: 1fr; }
+    .nav-links .link { display: none; }
+    .hero-stats { gap: 26px; }
+  }
+</style>
+</head>
+<body>
+
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="#top" aria-label="Data Scale">
+        <span class="mark" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span class="name">Data Scale</span>
+      </a>
+      <nav class="nav-links">
+        <a class="link" href="#servicos">Serviços</a>
+        <a class="link" href="#metodo">Como trabalhamos</a>
+        <a class="link" href="#para-quem">Para quem é</a>
+        <a class="btn btn-ghost" href="https://api.whatsapp.com/send/?phone=%2B5547989171843&text=Olá%2C+tudo+bem%3F+Gostaria+de+mais+informações.&type=phone_number&app_absent=0" target="_blank" rel="noopener">
+          Vamos conversar
+          <i data-lucide="arrow-up-right"></i>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero" id="top">
+    <div class="hero-bg" aria-hidden="true">
+      <div class="dots"></div>
+      <div class="glow"></div>
+    </div>
+    <div class="wrap hero-inner">
+      <span class="eyebrow">Consultoria · Dados · Cloud · IA</span>
+      <h1>Escalando negócios com <span class="accent">dados e inteligência artificial</span>.</h1>
+      <p class="sub">Ajudamos pequenas e médias empresas a transformarem dados, processos e atendimento em soluções inteligentes, escaláveis e eficientes — sob medida, sem complexidade desnecessária.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#servicos">
+          Ver o que fazemos
+          <i data-lucide="arrow-down"></i>
+        </a>
+        <a class="btn btn-ghost" href="https://www.datascaleconsultoria.com/" target="_blank" rel="noopener">
+          datascaleconsultoria.com
+          <i data-lucide="arrow-up-right"></i>
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="k">Solução sob medida</div>
+          <div class="v">Construída para o seu problema, não um pacote genérico</div>
+        </div>
+        <div class="stat">
+          <div class="k">Negócio antes da stack</div>
+          <div class="v">Começamos pelo resultado, depois a tecnologia</div>
+        </div>
+        <div class="stat">
+          <div class="k">Você opera sozinho</div>
+          <div class="v">Entregamos algo que a sua equipe consegue usar</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section lead">
+    <div class="wrap">
+      <div class="grid">
+        <div>
+          <span class="eyebrow"><span class="num">01</span> O que fazemos</span>
+        </div>
+        <div>
+          <p class="big">Conectamos <em>dados, automação e IA</em> ao dia a dia da empresa — para que decisões fiquem mais rápidas, o atendimento mais leve e os processos mais confiáveis.</p>
+          <div class="body" style="margin-top:24px;">
+            <p>Trabalhamos do diagnóstico à entrega: entendemos o problema de negócio, desenhamos a arquitetura certa e implementamos soluções que a sua equipe consegue operar no dia a dia.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section services" id="servicos">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow"><span class="num">02</span> Serviços</span>
+        <h2>Soluções construídas em torno do seu problema.</h2>
+        <p>Sete frentes que cobrem da infraestrutura de dados ao atendimento automatizado. Cada uma começa pela necessidade do negócio.</p>
+      </div>
+
+      <div class="svc-grid">
+        <article class="card">
+          <div class="ico"><i data-lucide="cloud"></i></div>
+          <h3>Consultoria em Dados e Cloud</h3>
+          <p>Estruturamos como sua empresa coleta, armazena, processa e analisa dados — com arquiteturas modernas que crescem junto com o negócio.</p>
+          <div class="tags">
+            <span class="tag">Azure</span>
+            <span class="tag">Databricks</span>
+            <span class="tag">Bancos de dados</span>
+            <span class="tag">APIs</span>
+          </div>
+        </article>
+        <article class="card">
+          <div class="ico"><i data-lucide="bar-chart-3"></i></div>
+          <h3>Dashboards e Business Intelligence</h3>
+          <p>Painéis gerenciais e operacionais que mostram o que importa: vendas, clientes, financeiro, estoque, performance e produtividade.</p>
+          <div class="tags">
+            <span class="tag">Power BI</span>
+            <span class="tag">Indicadores</span>
+            <span class="tag">Relatórios</span>
+          </div>
+        </article>
+        <article class="card">
+          <div class="ico"><i data-lucide="bot"></i></div>
+          <h3>Chatbots com Inteligência Artificial</h3>
+          <p>Assistentes virtuais que atendem clientes, apoiam a equipe interna, respondem dúvidas, ajudam nas vendas e fazem a triagem inicial.</p>
+          <div class="tags">
+            <span class="tag">Atendimento</span>
+            <span class="tag">Suporte interno</span>
+            <span class="tag">Triagem</span>
+          </div>
+        </article>
+        <article class="card">
+          <div class="ico"><i data-lucide="message-square-text"></i></div>
+          <h3>Integração com WhatsApp e CRM</h3>
+          <p>Chatbots e automações conectados ao WhatsApp e ao seu CRM, com registro de atendimentos, leads e contatos e respostas automáticas.</p>
+          <div class="tags">
+            <span class="tag">WhatsApp Business API</span>
+            <span class="tag">CRM</span>
+            <span class="tag">Leads</span>
+          </div>
+        </article>
+        <article class="card">
+          <div class="ico"><i data-lucide="file-search"></i></div>
+          <h3>Soluções RAG com documentos da empresa</h3>
+          <p>Chatbots que consultam seus documentos internos — políticas, contratos, manuais e bases de conhecimento — com respostas rápidas e com fonte.</p>
+          <div class="tags">
+            <span class="tag">RAG</span>
+            <span class="tag">Base de conhecimento</span>
+            <span class="tag">Respostas com fonte</span>
+          </div>
+        </article>
+        <article class="card">
+          <div class="ico"><i data-lucide="workflow"></i></div>
+          <h3>Automação de Processos</h3>
+          <p>Tiramos da mão tarefas repetitivas: planilhas, relatórios, envio de mensagens, análise de documentos e integração entre sistemas.</p>
+          <div class="tags">
+            <span class="tag">Relatórios</span>
+            <span class="tag">Integrações</span>
+            <span class="tag">Documentos</span>
+          </div>
+        </article>
+        <article class="card wide">
+          <div class="ico"><i data-lucide="git-branch"></i></div>
+          <div class="wide-body">
+            <h3>Engenharia de Dados e Pipelines</h3>
+            <p>A base que sustenta tudo: fluxos de dados entre sistemas, APIs, bancos e arquivos, garantindo dados confiáveis e prontos para análise.</p>
+          </div>
+          <div class="tags">
+            <span class="tag">Pipelines</span>
+            <span class="tag">Python</span>
+            <span class="tag">SQL</span>
+            <span class="tag">APIs</span>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="metodo">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow"><span class="num">03</span> Como trabalhamos</span>
+        <h2>Quatro princípios que guiam cada projeto.</h2>
+      </div>
+      <div class="pillars">
+        <div class="pillar">
+          <div class="ico"><i data-lucide="pen-tool"></i></div>
+          <div class="pnum">01</div>
+          <h3>Solução sob medida</h3>
+          <p>Nada de pacote pronto. Desenhamos a solução em torno da sua operação, do seu setor e do seu jeito de trabalhar.</p>
+        </div>
+        <div class="pillar">
+          <div class="ico"><i data-lucide="target"></i></div>
+          <div class="pnum">02</div>
+          <h3>Problema antes da stack</h3>
+          <p>Primeiro entendemos o resultado que você precisa. A tecnologia entra depois, como meio — não como vitrine.</p>
+        </div>
+        <div class="pillar">
+          <div class="ico"><i data-lucide="hand-helping"></i></div>
+          <div class="pnum">03</div>
+          <h3>Entrega que você opera</h3>
+          <p>Construímos algo que a sua equipe consegue usar e manter sozinha, com documentação e acompanhamento.</p>
+        </div>
+        <div class="pillar">
+          <div class="ico"><i data-lucide="shield-check"></i></div>
+          <div class="pnum">04</div>
+          <h3>Governança e segurança</h3>
+          <p>Cuidamos do acesso, da qualidade e da proteção dos dados em cada etapa — confiança vem antes de escala.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tech">
+    <div class="wrap">
+      <div class="tech-head">
+        <span class="eyebrow"><span class="num">04</span> Tecnologias</span>
+        <span class="label">Ferramentas que usamos no dia a dia</span>
+      </div>
+      <div class="tech-list">
+        <span class="chip"><span class="dot"></span>Azure</span>
+        <span class="chip"><span class="dot"></span>Databricks</span>
+        <span class="chip"><span class="dot"></span>Power BI</span>
+        <span class="chip"><span class="dot"></span>Python</span>
+        <span class="chip"><span class="dot"></span>SQL</span>
+        <span class="chip"><span class="dot"></span>WhatsApp Business API</span>
+        <span class="chip"><span class="dot"></span>LangChain / LangGraph</span>
+        <span class="chip"><span class="dot"></span>MCP</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="para-quem">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow"><span class="num">05</span> Para quem é</span>
+        <h2>Feito para empresas prontas para o próximo passo.</h2>
+      </div>
+      <div class="profiles">
+        <div class="profile">
+          <div class="ico"><i data-lucide="layout-grid"></i></div>
+          <h3>PMEs com dados espalhados</h3>
+          <p>Informação dividida entre planilhas, sistemas e e-mails. Centralizamos e organizamos para virar decisão.</p>
+        </div>
+        <div class="profile">
+          <div class="ico"><i data-lucide="headphones"></i></div>
+          <h3>Operações com muito atendimento manual</h3>
+          <p>Equipes sobrecarregadas com respostas repetitivas. Automatizamos o que é repetível e liberamos o time.</p>
+        </div>
+        <div class="profile">
+          <div class="ico"><i data-lucide="sparkles"></i></div>
+          <h3>Empresas começando na IA</h3>
+          <p>Quem quer dar o primeiro passo com inteligência artificial de forma prática, segura e com retorno claro.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <div class="cta">
+      <div class="cta-glow" aria-hidden="true"></div>
+      <div class="cta-inner">
+        <span class="eyebrow"><span class="num">06</span> Vamos conversar</span>
+        <h2>Tem um problema de dados, atendimento ou processo? Vamos resolver juntos.</h2>
+        <p>Uma conversa inicial é o suficiente para entendermos o seu cenário e mostrarmos onde dados e IA fazem diferença real — sem compromisso.</p>
+        <div class="cta-actions">
+          <a class="btn btn-white" href="https://www.datascaleconsultoria.com/" target="_blank" rel="noopener">
+            Acessar o site
+            <i data-lucide="arrow-up-right"></i>
+          </a>
+          <a class="btn btn-outline" href="https://calendly.com/contato-datascaleconsultoria/30min" target="_blank" rel="noopener">
+            Agendar uma conversa
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div class="wrap foot-inner">
+      <a class="brand" href="#top" aria-label="Data Scale">
+        <span class="mark" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span class="name">Data Scale</span>
+      </a>
+      <span class="tagline">Escalando negócios com dados e inteligência artificial.</span>
+      <span class="copy">datascaleconsultoria.com</span>
+    </div>
+  </footer>
+
+  <script>
+    if (window.lucide && typeof lucide.createIcons === "function") {
+      lucide.createIcons();
+    }
+  </script>
+</body>
+</html>
