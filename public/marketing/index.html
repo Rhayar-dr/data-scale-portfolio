@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Data Scale Marketing — Imagens de produto com modelos virtuais</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet" />
+<script src="https://unpkg.com/lucide@0.456.0/dist/umd/lucide.min.js"></script>
+<style>
+  :root {
+    --bg: #FAFAFA;
+    --surface: #FFFFFF;
+    --ink: #0B1220;
+    --ink-soft: #3A4150;
+    --ink-faint: #757B88;
+    --line: rgba(11, 18, 32, 0.10);
+    --line-soft: rgba(11, 18, 32, 0.06);
+    --magenta: #9333EA;
+    --magenta-deep: #7C24CC;
+    --magenta-tint: rgba(147, 51, 234, 0.08);
+    --blue: #0B3D91;
+    --dark: #0B1220;
+    /* pastel mock palette */
+    --nude: #E8DECF;
+    --sage: #C9D6CF;
+    --lavender: #D8C5E1;
+    --peach: #F2C9C2;
+    --blu: #BDC9E1;
+    --sand: #F2E1C7;
+    --grey: #E2E2E2;
+    --serif: "Fraunces", Georgia, "Times New Roman", serif;
+    --maxw: 1200px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  a { color: inherit; text-decoration: none; }
+  .wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 32px; }
+
+  .eyebrow {
+    font-size: 13px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--magenta); display: inline-flex; align-items: center; gap: 10px;
+  }
+  .eyebrow.on-dark { color: #C792F2; }
+
+  h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+
+  .section { padding: clamp(72px, 9vw, 124px) 0; }
+  .section-head { max-width: 760px; }
+  .section-head h2 { font-family: var(--serif); font-weight: 500; font-size: clamp(30px, 4vw, 46px); letter-spacing: -0.01em; margin-top: 16px; line-height: 1.08; }
+  .section-head p { color: var(--ink-soft); font-size: clamp(17px, 1.5vw, 19px); margin-top: 16px; text-wrap: pretty; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-weight: 600; font-size: 15.5px; padding: 13px 22px; border-radius: 10px;
+    transition: all 0.2s ease; white-space: nowrap; cursor: pointer; border: 1px solid transparent;
+  }
+  .btn svg { width: 17px; height: 17px; }
+  .btn-primary { background: var(--magenta); color: #fff; }
+  .btn-primary:hover { background: var(--magenta-deep); transform: translateY(-1px); }
+  .btn-ghost { border-color: var(--line); color: var(--ink); background: var(--surface); }
+  .btn-ghost:hover { border-color: var(--magenta); color: var(--magenta); }
+  .btn-ghost.on-dark { background: transparent; border-color: rgba(255,255,255,0.28); color: #fff; }
+  .btn-ghost.on-dark:hover { border-color: #fff; background: rgba(255,255,255,0.08); }
+  .btn-white { background: #fff; color: var(--magenta); }
+  .btn-white:hover { background: #f7f0fd; transform: translateY(-1px); }
+
+  /* ---------- Mock image system ---------- */
+  .mock {
+    position: relative; overflow: hidden; border-radius: 12px;
+    background: var(--nude);
+    display: flex; align-items: flex-end; justify-content: center;
+  }
+  .mock::before { /* soft vignette/gradient */
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(160deg, rgba(255,255,255,0.35), rgba(0,0,0,0.06) 75%);
+  }
+  .mock .silh { position: relative; z-index: 1; width: 54%; height: 78%; opacity: 0.5; }
+  .mock .silh svg { width: 100%; height: 100%; display: block; }
+  .mock img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; border-radius: 12px; cursor: pointer; }
+
+  /* ---------- Lightbox ---------- */
+  .lightbox {
+    position: fixed; inset: 0; z-index: 9999;
+    background: rgba(0,0,0,0.88);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s ease;
+    cursor: pointer;
+  }
+  .lightbox.active { opacity: 1; pointer-events: auto; }
+  .lightbox img {
+    max-width: 92vw; max-height: 92vh;
+    object-fit: contain; border-radius: 8px;
+    transform: scale(0.92); transition: transform 0.25s ease;
+  }
+  .lightbox.active img { transform: scale(1); }
+  .lightbox .lb-close {
+    position: absolute; top: 20px; right: 24px;
+    color: #fff; font-size: 32px; font-weight: 300;
+    cursor: pointer; line-height: 1; opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+  .lightbox .lb-close:hover { opacity: 1; }
+  .mock.nude { background: var(--nude); } .mock.nude .silh svg { fill: #B9A589; }
+  .mock.sage { background: var(--sage); } .mock.sage .silh svg { fill: #8AA396; }
+  .mock.lavender { background: var(--lavender); } .mock.lavender .silh svg { fill: #A684BC; }
+  .mock.peach { background: var(--peach); } .mock.peach .silh svg { fill: #D89187; }
+  .mock.blu { background: var(--blu); } .mock.blu .silh svg { fill: #8597BE; }
+  .mock.sand { background: var(--sand); } .mock.sand .silh svg { fill: #CBA877; }
+  .mock.grey { background: var(--grey); } .mock.grey .silh svg { fill: #B4B4B4; }
+
+  .mock .tags { position: absolute; z-index: 2; bottom: 10px; left: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .mock .mtag {
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.02em;
+    background: rgba(255,255,255,0.82); color: #2A2F3A;
+    padding: 3px 8px; border-radius: 6px; backdrop-filter: blur(4px);
+  }
+
+  /* ---------- Header ---------- */
+  header.nav {
+    position: sticky; top: 0; z-index: 60;
+    background: rgba(11,18,32,0.92);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 68px; }
+  .brand { display: flex; align-items: center; gap: 11px; }
+  .brand .mark { display: flex; align-items: flex-end; gap: 3px; height: 20px; }
+  .brand .mark span { width: 4px; border-radius: 2px; }
+  .brand .mark span:nth-child(1) { height: 8px; background: rgba(255,255,255,0.45); }
+  .brand .mark span:nth-child(2) { height: 14px; background: rgba(255,255,255,0.7); }
+  .brand .mark span:nth-child(3) { height: 20px; background: #C792F2; }
+  .brand .name { font-weight: 800; font-size: 18px; color: #fff; letter-spacing: -0.02em; }
+  .brand .sfx { font-weight: 500; color: rgba(255,255,255,0.5); font-size: 18px; }
+  .nav-links { display: flex; align-items: center; gap: 30px; }
+  .nav-links .link { color: rgba(255,255,255,0.72); font-size: 15px; font-weight: 500; transition: color 0.18s; }
+  .nav-links .link:hover { color: #fff; }
+
+  /* ---------- Hero ---------- */
+  .hero { background: var(--dark); color: #fff; position: relative; overflow: hidden; padding: clamp(60px, 8vw, 100px) 0 clamp(64px, 8vw, 100px); }
+  .hero::before { content: ""; position: absolute; inset: 0; background: radial-gradient(760px 520px at 80% 0%, rgba(147,51,234,0.40), transparent 60%); pointer-events: none; }
+  .hero-grid { position: relative; z-index: 1; display: grid; grid-template-columns: 1.02fr 0.98fr; gap: clamp(36px, 5vw, 64px); align-items: center; }
+  .hero h1 { font-family: var(--serif); font-size: clamp(36px, 5.4vw, 62px); font-weight: 500; letter-spacing: -0.015em; line-height: 1.04; margin-top: 22px; }
+  .hero h1 .accent { color: #C792F2; font-style: italic; }
+  .hero .sub { font-size: clamp(17px, 1.7vw, 20px); color: rgba(255,255,255,0.78); margin-top: 24px; max-width: 540px; text-wrap: pretty; }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 13px; margin-top: 34px; }
+
+  .hero-thumbs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .hero-thumbs .mock { aspect-ratio: 3 / 4; box-shadow: 0 18px 40px -22px rgba(0,0,0,0.55); }
+
+  /* ---------- KPI strip ---------- */
+  .kpis { background: var(--dark); border-top: 1px solid rgba(255,255,255,0.08); }
+  .kpis-inner { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: rgba(255,255,255,0.08); }
+  .kpi { background: var(--dark); padding: 22px 24px; display: flex; align-items: center; gap: 12px; }
+  .kpi .ico { color: #C792F2; flex-shrink: 0; }
+  .kpi .ico svg { width: 18px; height: 18px; }
+  .kpi .txt { color: rgba(255,255,255,0.88); font-size: 14.5px; font-weight: 600; }
+
+  /* ---------- Antes e Depois ---------- */
+  .ba-grid { display: grid; grid-template-columns: 30fr 70fr; gap: 22px; margin-top: 52px; align-items: stretch; }
+  .ba-col .ba-tag { font-size: 12px; font-weight: 700; letter-spacing: 0.10em; text-transform: uppercase; color: var(--ink-faint); display: block; margin-bottom: 14px; }
+  .ba-before .packshot {
+    aspect-ratio: 4 / 5; border-radius: 12px; background: #F4F4F4; border: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center; position: relative;
+  }
+  .ba-before .packshot .box { width: 46%; height: 46%; background: #E0E0E0; border-radius: 8px; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04); }
+  .ba-before .packshot .lbl { position: absolute; bottom: 14px; left: 0; right: 0; text-align: center; font-size: 11px; font-family: ui-monospace, monospace; color: var(--ink-faint); }
+  .ba-before .cap { color: var(--ink-soft); font-size: 14px; margin-top: 14px; text-wrap: pretty; }
+  .ba-after { position: relative; }
+  .ba-after .after-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .ba-after .after-grid .mock { aspect-ratio: 4 / 5; }
+  .ba-arrow {
+    position: absolute; left: -34px; top: 50%; transform: translateY(-50%);
+    width: 44px; height: 44px; border-radius: 50%; background: var(--magenta); color: #fff;
+    display: flex; align-items: center; justify-content: center; z-index: 3; box-shadow: 0 10px 24px -10px rgba(147,51,234,0.7);
+  }
+  .ba-arrow svg { width: 20px; height: 20px; }
+  .ba-punch { text-align: center; margin-top: 40px; font-family: var(--serif); font-style: italic; font-weight: 500; font-size: clamp(22px, 2.6vw, 30px); color: var(--ink); }
+  .ba-punch b { font-style: normal; color: var(--magenta); }
+
+  /* ---------- Catálogo de modelos ---------- */
+  .models { background: var(--surface); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .model-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 52px; }
+  .model { transition: transform 0.2s; }
+  .model:hover { transform: translateY(-3px); }
+  .model .mock { aspect-ratio: 3 / 4; border-radius: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); transition: box-shadow 0.2s; }
+  .model:hover .mock { box-shadow: 0 18px 38px -22px rgba(11,18,32,0.4); }
+  .model .meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 12px; }
+  .model .nm { font-weight: 700; font-size: 15.5px; }
+  .model .mt { font-size: 12px; color: var(--ink-soft); background: var(--bg); border: 1px solid var(--line); padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+  .models-more { display: flex; justify-content: center; margin-top: 32px; }
+  .chip-more { font-size: 14px; font-weight: 600; color: var(--magenta); background: var(--magenta-tint); padding: 9px 18px; border-radius: 999px; }
+
+  /* ---------- Cenários ---------- */
+  .scenes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 52px; }
+  .scene {
+    border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: var(--surface);
+    display: flex; flex-direction: column; transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  }
+  .scene:hover { border-color: rgba(147,51,234,0.35); transform: translateY(-3px); box-shadow: 0 16px 38px -24px rgba(147,51,234,0.4); }
+  .scene .mock { aspect-ratio: 16 / 10; border-radius: 0; }
+  .scene .sbody { padding: 20px 22px 22px; }
+  .scene h3 { font-size: 18px; font-weight: 700; }
+  .scene p { color: var(--ink-soft); font-size: 14.5px; margin-top: 7px; text-wrap: pretty; }
+  .scene .num { font-family: ui-monospace, monospace; font-size: 12px; color: var(--magenta); }
+
+  /* ---------- Como funciona ---------- */
+  .how { background: var(--surface); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 56px; }
+  .step { padding: 0 26px; position: relative; }
+  .step:not(:last-child)::after { content: ""; position: absolute; top: 24px; right: -8px; width: 16px; height: 16px; border-top: 2px solid var(--line); border-right: 2px solid var(--line); transform: rotate(45deg); }
+  .step .n { width: 50px; height: 50px; border-radius: 13px; background: var(--magenta-tint); color: var(--magenta); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px; margin-bottom: 20px; }
+  .step h3 { font-size: 18px; font-weight: 700; }
+  .step p { color: var(--ink-soft); font-size: 15px; margin-top: 9px; text-wrap: pretty; }
+
+  /* ---------- Pacotes ---------- */
+  .plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 52px; align-items: start; }
+  .plan { border: 1px solid var(--line); border-radius: 16px; padding: 32px 28px; background: var(--surface); }
+  .plan.featured { border-color: var(--magenta); box-shadow: 0 26px 60px -30px rgba(147,51,234,0.5); position: relative; }
+  .plan .badge { position: absolute; top: -12px; left: 28px; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; color: #fff; background: var(--magenta); padding: 4px 12px; border-radius: 999px; }
+  .plan .pname { font-family: var(--serif); font-weight: 600; font-size: 24px; letter-spacing: -0.01em; }
+  .plan .pdesc { color: var(--ink-faint); font-size: 14px; margin-top: 4px; }
+  .plan ul { list-style: none; display: flex; flex-direction: column; gap: 13px; margin-top: 24px; }
+  .plan li { display: flex; gap: 11px; font-size: 15px; color: var(--ink-soft); line-height: 1.4; }
+  .plan li svg { width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px; color: var(--magenta); }
+  .plans-cta { display: flex; justify-content: center; margin-top: 36px; }
+
+  /* ---------- FAQ ---------- */
+  .faq-wrap { max-width: 820px; margin: 48px auto 0; }
+  .faq-item { border-bottom: 1px solid var(--line); }
+  .faq-q { width: 100%; text-align: left; background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 24px 0; font-family: inherit; font-size: 18px; font-weight: 600; color: var(--ink); }
+  .faq-q .sign { flex-shrink: 0; width: 26px; height: 26px; position: relative; color: var(--magenta); }
+  .faq-q .sign::before, .faq-q .sign::after { content: ""; position: absolute; background: currentColor; border-radius: 2px; }
+  .faq-q .sign::before { top: 12px; left: 4px; width: 18px; height: 2px; }
+  .faq-q .sign::after { top: 4px; left: 12px; width: 2px; height: 18px; transition: transform 0.25s, opacity 0.25s; }
+  .faq-item.open .faq-q .sign::after { transform: rotate(90deg); opacity: 0; }
+  .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+  .faq-a-inner { padding: 0 0 24px; color: var(--ink-soft); font-size: 16px; max-width: 680px; text-wrap: pretty; }
+  .faq-item.open .faq-a { max-height: 340px; }
+
+  /* ---------- CTA final ---------- */
+  .final { background: var(--dark); color: #fff; position: relative; overflow: hidden; }
+  .final::before { content: ""; position: absolute; inset: 0; background: radial-gradient(700px 420px at 78% 18%, rgba(147,51,234,0.45), transparent 60%); pointer-events: none; }
+  .final-inner { position: relative; z-index: 1; text-align: center; max-width: 780px; margin: 0 auto; }
+  .final h2 { font-family: var(--serif); font-weight: 500; font-size: clamp(32px, 4.4vw, 52px); letter-spacing: -0.01em; line-height: 1.08; }
+  .final p { color: rgba(255,255,255,0.8); font-size: 19px; margin-top: 18px; }
+  .final-cta { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-top: 36px; }
+
+  /* ---------- Footer ---------- */
+  footer.foot { background: var(--dark); border-top: 1px solid rgba(255,255,255,0.08); }
+  .foot-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; padding: 30px 0; }
+  .foot .tagline { color: rgba(255,255,255,0.55); font-size: 14px; }
+  .foot .copy { color: rgba(255,255,255,0.4); font-size: 13px; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 940px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .kpis-inner { grid-template-columns: 1fr 1fr; }
+    .ba-grid { grid-template-columns: 1fr; }
+    .ba-arrow { display: none; }
+    .model-grid { grid-template-columns: repeat(3, 1fr); }
+    .scenes { grid-template-columns: 1fr 1fr; }
+    .steps { grid-template-columns: 1fr 1fr; row-gap: 36px; }
+    .step:not(:last-child)::after { display: none; }
+    .plans { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 600px) {
+    body { font-size: 16px; }
+    .wrap { padding: 0 20px; }
+    .nav-links .link { display: none; }
+    .kpis-inner { grid-template-columns: 1fr; }
+    .hero-thumbs { grid-template-columns: 1fr 1fr; }
+    .model-grid { grid-template-columns: 1fr 1fr; }
+    .scenes { grid-template-columns: 1fr; }
+    .steps { grid-template-columns: 1fr; }
+    .ba-after .after-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- silhouette template (reused via <use>) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="silh" viewBox="0 0 100 130">
+      <circle cx="50" cy="28" r="20"></circle>
+      <path d="M14 130 C14 86 28 60 50 60 C72 60 86 86 86 130 Z"></path>
+    </symbol>
+  </svg>
+
+  <!-- ===================== NAV ===================== -->
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="#top" aria-label="Data Scale Marketing">
+        <span class="mark" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span class="name">Data Scale <span class="sfx">Marketing</span></span>
+      </a>
+      <nav class="nav-links">
+        <a class="link" href="#antes-depois">Antes & Depois</a>
+        <a class="link" href="#modelos">Modelos</a>
+        <a class="link" href="#cenarios">Cenários</a>
+        <a class="link" href="#pacotes">Pacotes</a>
+        <a class="btn btn-ghost on-dark" href="https://api.whatsapp.com/send/?phone=%2B5547989171843&text=Olá%2C+quero+as+3+imagens+grátis+do+meu+produto!&type=phone_number&app_absent=0" target="_blank" rel="noopener">3 imagens grátis</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===================== HERO ===================== -->
+  <section class="hero" id="top">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <span class="eyebrow on-dark">Imagens de produto com IA</span>
+        <h1>Seu produto, com modelo, em qualquer cenário — <span class="accent">sem agência, sem estúdio.</span></h1>
+        <p class="sub">Geramos imagens fotorrealistas do seu produto vestido ou usado por modelos virtuais. Você escolhe o modelo, o cenário e o enquadramento — entregamos um banco pronto para e-commerce, Instagram e anúncios.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#cta">
+            Receba 3 imagens grátis em 48h
+            <i data-lucide="arrow-right"></i>
+          </a>
+          <a class="btn btn-ghost on-dark" href="#antes-depois">Ver exemplos</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-thumbs">
+          <div class="mock nude"><div class="tags"><span class="mtag">Estúdio</span><span class="mtag">Frente</span></div><img src="/img/1-1-estudio-frente.webp" alt="Estúdio frente"></div>
+          <div class="mock sage"><div class="tags"><span class="mtag">Urbano</span><span class="mtag">Perfil</span></div><img src="/img/1-2-urbano-perfil.webp" alt="Urbano perfil"></div>
+          <div class="mock lavender"><div class="tags"><span class="mtag">Editorial</span><span class="mtag">Detalhe</span></div><img src="/img/1-3-editorial-detalhe.webp" alt="Editorial detalhe"></div>
+          <div class="mock peach"><div class="tags"><span class="mtag">Outdoor</span><span class="mtag">Ação</span></div><img src="/img/1-4-outdoor-acao.webp" alt="Outdoor ação"></div>
+          <div class="mock blu"><div class="tags"><span class="mtag">Flat-lay</span><span class="mtag">Topo</span></div><img src="/img/1-5-flatlay-topo.webp" alt="Flat-lay topo"></div>
+          <div class="mock grey"><div class="tags"><span class="mtag">Story</span><span class="mtag">9:16</span></div><img src="/img/1-6-story-vertical.webp" alt="Story 9:16" style="object-position:bottom"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== KPI STRIP ===================== -->
+  <section class="kpis">
+    <div class="wrap">
+      <div class="kpis-inner">
+        <div class="kpi"><span class="ico"><i data-lucide="timer"></i></span><span class="txt">48h primeira entrega</span></div>
+        <div class="kpi"><span class="ico"><i data-lucide="users"></i></span><span class="txt">12+ modelos diversos</span></div>
+        <div class="kpi"><span class="ico"><i data-lucide="infinity"></i></span><span class="txt">Variações infinitas por produto</span></div>
+        <div class="kpi"><span class="ico"><i data-lucide="badge-check"></i></span><span class="txt">Uso comercial incluído</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ANTES E DEPOIS ===================== -->
+  <section class="section" id="antes-depois">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Antes & Depois</span>
+        <h2>Foto do produto entra. Catálogo de variações sai.</h2>
+        <p>Você manda o packshot que já tem. A gente devolve o mesmo produto em modelos, ângulos e cenários diferentes — quantas versões você precisar.</p>
+      </div>
+      <div class="ba-grid">
+        <div class="ba-col ba-before">
+          <span class="ba-tag">Você envia</span>
+          <div class="packshot">
+            <img src="/img/2-1-packshot-produto.webp" alt="Packshot do produto em fundo neutro" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;">
+          </div>
+          <p class="cap">Foto do produto em fundo neutro, do jeito que você já tem.</p>
+        </div>
+        <div class="ba-col ba-after">
+          <span class="ba-tag">Você recebe</span>
+          <div class="ba-arrow" aria-hidden="true"><i data-lucide="arrow-right"></i></div>
+          <div class="after-grid">
+            <div class="mock nude"><div class="tags"><span class="mtag">Estúdio</span><span class="mtag">Frente</span></div><img src="/img/2-2-estudio-frente.webp" alt="Estúdio frente"></div>
+            <div class="mock sage"><div class="tags"><span class="mtag">Lifestyle urbano</span><span class="mtag">Perfil</span></div><img src="/img/2-3-lifestyle-urbano.webp" alt="Lifestyle urbano perfil"></div>
+            <div class="mock lavender"><div class="tags"><span class="mtag">Editorial</span><span class="mtag">Detalhe</span></div><img src="/img/2-4-editorial-detalhe.webp" alt="Editorial detalhe"></div>
+            <div class="mock peach"><div class="tags"><span class="mtag">Outdoor</span><span class="mtag">Ação</span></div><img src="/img/2-5-outdoor-acao.webp" alt="Outdoor ação"></div>
+          </div>
+        </div>
+      </div>
+      <p class="ba-punch">Foto entra. <b>Catálogo sai.</b></p>
+    </div>
+  </section>
+
+  <!-- ===================== CATÁLOGO DE MODELOS ===================== -->
+  <section class="section models" id="modelos">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Catálogo de modelos</span>
+        <h2>Quem mostra seu produto?</h2>
+        <p>Você escolhe. Diversidade real — sem agência de talento, sem booking, sem direitos de imagem para renovar.</p>
+      </div>
+      <div class="model-grid">
+        <div class="model"><div class="mock nude"><img src="/img/modelos/marina.webp" alt="Marina"></div><div class="meta"><span class="nm">Marina</span><span class="mt">25 · urbano</span></div></div>
+        <div class="model"><div class="mock sage"><img src="/img/modelos/caio.webp" alt="Caio"></div><div class="meta"><span class="nm">Caio</span><span class="mt">32 · executivo</span></div></div>
+        <div class="model"><div class="mock lavender"><img src="/img/modelos/lucia.webp" alt="Lúcia"></div><div class="meta"><span class="nm">Lúcia</span><span class="mt">45 · clássico</span></div></div>
+        <div class="model"><div class="mock peach"><img src="/img/modelos/tomas.webp" alt="Tomás"></div><div class="meta"><span class="nm">Tomás</span><span class="mt">28 · streetwear</span></div></div>
+        <div class="model"><div class="mock blu"><img src="/img/modelos/aisha.webp" alt="Aisha"></div><div class="meta"><span class="nm">Aisha</span><span class="mt">22 · editorial</span></div></div>
+        <div class="model"><div class="mock sand"><img src="/img/modelos/hiroshi.webp" alt="Hiroshi"></div><div class="meta"><span class="nm">Hiroshi</span><span class="mt">35 · minimal</span></div></div>
+        <div class="model"><div class="mock peach"><img src="/img/modelos/bia.webp" alt="Bia"></div><div class="meta"><span class="nm">Bia</span><span class="mt">18 · jovem</span></div></div>
+        <div class="model"><div class="mock blu"><img src="/img/modelos/felipe.webp" alt="Felipe"></div><div class="meta"><span class="nm">Felipe</span><span class="mt">52 · maduro</span></div></div>
+        <div class="model"><div class="mock sage"><img src="/img/modelos/camila.webp" alt="Camila"></div><div class="meta"><span class="nm">Camila</span><span class="mt">29 · fitness</span></div></div>
+        <div class="model"><div class="mock nude"><img src="/img/modelos/diego.webp" alt="Diego"></div><div class="meta"><span class="nm">Diego</span><span class="mt">40 · descolado</span></div></div>
+        <div class="model"><div class="mock lavender"><img src="/img/modelos/yara.webp" alt="Yara"></div><div class="meta"><span class="nm">Yara</span><span class="mt">33 · boêmia</span></div></div>
+        <div class="model"><div class="mock sand"><img src="/img/modelos/pedro.webp" alt="Pedro"></div><div class="meta"><span class="nm">Pedro</span><span class="mt">24 · corporativo</span></div></div>
+      </div>
+      <div class="models-more">
+        <span class="chip-more">+ Outros 30 modelos no catálogo completo</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CENÁRIOS ===================== -->
+  <section class="section" id="cenarios">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Cenários</span>
+        <h2>Um produto. Seis climas diferentes.</h2>
+        <p>Do estúdio limpo ao editorial dramático — o mesmo produto ganha o cenário certo para cada canal.</p>
+      </div>
+      <div class="scenes">
+        <div class="scene">
+          <div class="mock nude"><img src="/img/3-1-estudio.webp" alt="Cenário estúdio"></div>
+          <div class="sbody"><span class="num">01</span><h3>Estúdio</h3><p>Fundo neutro, luz suave e sombra controlada. O clássico de e-commerce.</p></div>
+        </div>
+        <div class="scene">
+          <div class="mock sage"><img src="/img/3-2-lifestyle-urbano.webp" alt="Cenário lifestyle urbano"></div>
+          <div class="sbody"><span class="num">02</span><h3>Lifestyle urbano</h3><p>Café, rua, luz dourada. O produto no contexto do dia a dia.</p></div>
+        </div>
+        <div class="scene">
+          <div class="mock lavender"><img src="/img/3-3-editorial.webp" alt="Cenário editorial"></div>
+          <div class="sbody"><span class="num">03</span><h3>Editorial</h3><p>Luz lateral, clima de revista. Para campanhas e lançamentos.</p></div>
+        </div>
+        <div class="scene">
+          <div class="mock peach"><img src="/img/3-4-outdoor-natureza.webp" alt="Cenário outdoor natureza"></div>
+          <div class="sbody"><span class="num">04</span><h3>Outdoor / Natureza</h3><p>Litoral, parque, luz natural. Frescor e movimento para a marca.</p></div>
+        </div>
+        <div class="scene">
+          <div class="mock blu"><img src="/img/3-5-flatlay.webp" alt="Cenário flat-lay"></div>
+          <div class="sbody"><span class="num">05</span><h3>Flat-lay</h3><p>Vista de cima, produto e props compostos. Perfeito para feed.</p></div>
+        </div>
+        <div class="scene">
+          <div class="mock sand"><img src="/img/3-6-story-vertical.webp" alt="Cenário story vertical 9:16"></div>
+          <div class="sbody"><span class="num">06</span><h3>Story vertical 9:16</h3><p>Enquadramento de Stories e Reels, pronto para postar.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== COMO FUNCIONA ===================== -->
+  <section class="section how">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Como funciona</span>
+        <h2>Da foto crua ao post, em quatro passos.</h2>
+      </div>
+      <div class="steps">
+        <div class="step"><div class="n">1</div><h3>Você envia</h3><p>Manda a foto do produto e um briefing curto do que quer transmitir.</p></div>
+        <div class="step"><div class="n">2</div><h3>Você escolhe</h3><p>Seleciona os modelos e cenários do catálogo que combinam com a marca.</p></div>
+        <div class="step"><div class="n">3</div><h3>A gente gera</h3><p>Produzimos as imagens com curadoria humana antes de entregar.</p></div>
+        <div class="step"><div class="n">4</div><h3>Você publica</h3><p>Recebe o banco em todos os formatos, pronto para e-com, IG e anúncios.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PACOTES ===================== -->
+  <section class="section" id="pacotes">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Pacotes</span>
+        <h2>Escolha o ritmo da sua marca.</h2>
+        <p>Planos mensais que acompanham o quanto você publica. Sem ensaio, sem locação, sem surpresa.</p>
+      </div>
+      <div class="plans">
+        <div class="plan">
+          <div class="pname">Start</div>
+          <div class="pdesc">Para quem está começando a escalar conteúdo.</div>
+          <ul>
+            <li><i data-lucide="check"></i> 20 imagens por mês</li>
+            <li><i data-lucide="check"></i> 2 modelos à escolha</li>
+            <li><i data-lucide="check"></i> 3 cenários</li>
+            <li><i data-lucide="check"></i> Formatos e-com + redes</li>
+            <li><i data-lucide="check"></i> Uso comercial incluído</li>
+          </ul>
+        </div>
+        <div class="plan featured">
+          <span class="badge">Mais escolhido</span>
+          <div class="pname">Grow</div>
+          <div class="pdesc">Para marcas que postam toda semana.</div>
+          <ul>
+            <li><i data-lucide="check"></i> 50 imagens por mês</li>
+            <li><i data-lucide="check"></i> 6 modelos à escolha</li>
+            <li><i data-lucide="check"></i> 5 cenários</li>
+            <li><i data-lucide="check"></i> Todos os formatos (1:1, 4:5, 9:16, 16:9)</li>
+            <li><i data-lucide="check"></i> Entregas em levas semanais</li>
+          </ul>
+        </div>
+        <div class="plan">
+          <div class="pname">Scale</div>
+          <div class="pdesc">Para catálogo grande e campanhas contínuas.</div>
+          <ul>
+            <li><i data-lucide="check"></i> 100+ imagens por mês</li>
+            <li><i data-lucide="check"></i> Catálogo completo de modelos</li>
+            <li><i data-lucide="check"></i> Todos os cenários e formatos</li>
+            <li><i data-lucide="check"></i> Prioridade na fila de produção</li>
+            <li><i data-lucide="check"></i> Modelos sob demanda</li>
+          </ul>
+        </div>
+      </div>
+      <div class="plans-cta">
+        <a class="btn btn-primary" href="#cta">Conversa rápida <i data-lucide="arrow-right"></i></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FAQ ===================== -->
+  <section class="section models">
+    <div class="wrap">
+      <div class="section-head" style="margin:0 auto; text-align:center;">
+        <span class="eyebrow">Dúvidas</span>
+        <h2>Perguntas que toda marca faz.</h2>
+      </div>
+      <div class="faq-wrap">
+        <div class="faq-item">
+          <button class="faq-q">Posso usar comercialmente em qualquer canal?<span class="sign" aria-hidden="true"></span></button>
+          <div class="faq-a"><div class="faq-a-inner">Sim. Cada imagem entregue vem com direito de uso comercial perpétuo: e-commerce, redes sociais, anúncios pagos e catálogo impresso. Sem modelo para renovar direito de imagem.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">Funciona com qualquer tipo de produto?<span class="sign" aria-hidden="true"></span></button>
+          <div class="faq-a"><div class="faq-a-inner">Funciona muito bem para roupas, calçados, acessórios, cosméticos e produtos de uso pessoal. Para joias e óculos, fazemos ajuste fino caso a caso. Eletrônicos e produtos técnicos: geramos em cenário/lifestyle, mas o detalhe técnico continua sendo packshot tradicional.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">Quanto tempo demora cada entrega?<span class="sign" aria-hidden="true"></span></button>
+          <div class="faq-a"><div class="faq-a-inner">Primeira leva (3 imagens de teste): 48h. Nos pacotes mensais, entregamos em levas semanais — você acompanha numa pasta compartilhada e aprova conforme chega.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">E se a imagem ficar estranha — mão torta, anatomia errada?<span class="sign" aria-hidden="true"></span></button>
+          <div class="faq-a"><div class="faq-a-inner">Acontece. Toda imagem passa por revisão e curadoria humana antes da entrega. Se mesmo assim algo passar, refazemos sem custo.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">Como começo?<span class="sign" aria-hidden="true"></span></button>
+          <div class="faq-a"><div class="faq-a-inner">Manda uma foto do seu produto pelo WhatsApp ou e-mail. Em 48h devolvemos 3 imagens em modelos e cenários diferentes. Você decide se quer assinar um pacote.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CTA FINAL ===================== -->
+  <section class="section final" id="cta">
+    <div class="wrap final-inner">
+      <span class="eyebrow on-dark">Amostra grátis</span>
+      <h2>Manda uma foto do produto. Devolvo 3 imagens grátis em 48h.</h2>
+      <p>Sem compromisso. Você vê o seu produto em modelos e cenários diferentes antes de decidir qualquer coisa.</p>
+      <div class="final-cta">
+        <a class="btn btn-white" href="https://api.whatsapp.com/send/?phone=%2B5547989171843&text=Olá%2C+quero+as+3+imagens+grátis+do+meu+produto!&type=phone_number&app_absent=0" target="_blank" rel="noopener">
+          Quero 3 imagens grátis
+          <i data-lucide="arrow-right"></i>
+        </a>
+        <a class="btn btn-ghost on-dark" href="https://calendly.com/contato-datascaleconsultoria/30min" target="_blank" rel="noopener">
+          Agendar uma conversa
+          <i data-lucide="arrow-up-right"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="foot">
+    <div class="wrap foot-inner">
+      <a class="brand" href="#top" aria-label="Data Scale Marketing">
+        <span class="mark" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span class="name">Data Scale <span class="sfx">Marketing</span></span>
+      </a>
+      <span class="tagline">Imagens de produto com modelos virtuais, geradas por IA.</span>
+      <span class="copy">datascaleconsultoria.com</span>
+    </div>
+  </footer>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <span class="lb-close">&times;</span>
+    <img src="" alt="">
+  </div>
+
+  <script>
+    /* ---------- Lightbox ---------- */
+    (function () {
+      var lb = document.getElementById("lightbox");
+      var lbImg = lb.querySelector("img");
+      var lbClose = lb.querySelector(".lb-close");
+
+      document.querySelectorAll(".mock img").forEach(function (img) {
+        img.addEventListener("click", function (e) {
+          e.stopPropagation();
+          lbImg.src = img.src;
+          lbImg.alt = img.alt;
+          lb.classList.add("active");
+          document.body.style.overflow = "hidden";
+        });
+      });
+
+      function close() {
+        lb.classList.remove("active");
+        document.body.style.overflow = "";
+      }
+
+      lb.addEventListener("click", close);
+      lbClose.addEventListener("click", close);
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") close();
+      });
+    })();
+
+    document.querySelectorAll(".faq-q").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var item = btn.closest(".faq-item");
+        var isOpen = item.classList.contains("open");
+        document.querySelectorAll(".faq-item.open").forEach(function (o) { o.classList.remove("open"); });
+        if (!isOpen) item.classList.add("open");
+      });
+    });
+    var first = document.querySelector(".faq-item");
+    if (first) first.classList.add("open");
+
+    if (window.lucide && typeof lucide.createIcons === "function") {
+      lucide.createIcons();
+    }
+  </script>
+</body>
+</html>

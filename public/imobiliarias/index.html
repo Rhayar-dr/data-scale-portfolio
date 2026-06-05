@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Data Scale — Atendimento WhatsApp com IA para Imobiliárias</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<script src="https://unpkg.com/lucide@0.456.0/dist/umd/lucide.min.js"></script>
+<style>
+  :root {
+    --bg: #FAFAFA;
+    --surface: #FFFFFF;
+    --ink: #0B1220;
+    --ink-soft: #3A4150;
+    --ink-faint: #717784;
+    --line: rgba(11, 18, 32, 0.10);
+    --line-soft: rgba(11, 18, 32, 0.06);
+    --blue: #0B3D91;
+    --blue-hover: #0A337A;
+    --blue-tint: rgba(11, 61, 145, 0.07);
+    --green: #0F5132;
+    --green-bubble: #DCF8C6;
+    --dark: #0B1220;
+    --maxw: 1200px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  .wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 32px; }
+
+  .eyebrow {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: var(--blue);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .eyebrow.on-dark { color: #8FB0EE; }
+
+  h1, h2, h3 { font-weight: 800; letter-spacing: -0.025em; line-height: 1.12; }
+
+  .section { padding: clamp(72px, 9vw, 120px) 0; }
+  .section-head { max-width: 760px; }
+  .section-head h2 { font-size: clamp(28px, 3.6vw, 42px); margin-top: 18px; }
+  .section-head p { color: var(--ink-soft); font-size: clamp(17px, 1.5vw, 19px); margin-top: 16px; text-wrap: pretty; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-weight: 600; font-size: 15.5px;
+    padding: 13px 22px; border-radius: 10px;
+    transition: all 0.2s ease; white-space: nowrap; cursor: pointer;
+    border: 1px solid transparent;
+  }
+  .btn svg { width: 17px; height: 17px; }
+  .btn-primary { background: var(--blue); color: #fff; }
+  .btn-primary:hover { background: var(--blue-hover); transform: translateY(-1px); }
+  .btn-ghost { border-color: var(--line); color: var(--ink); background: var(--surface); }
+  .btn-ghost:hover { border-color: var(--blue); color: var(--blue); }
+  .btn-ghost.on-dark { background: transparent; border-color: rgba(255,255,255,0.28); color: #fff; }
+  .btn-ghost.on-dark:hover { border-color: #fff; background: rgba(255,255,255,0.08); }
+  .btn-white { background: #fff; color: var(--blue); }
+  .btn-white:hover { background: #eef2fb; transform: translateY(-1px); }
+
+  /* ---------- Header ---------- */
+  header.nav {
+    position: sticky; top: 0; z-index: 60;
+    background: rgba(11,18,32,0.92);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 68px; }
+  .brand { display: flex; align-items: center; gap: 11px; }
+  .brand .mark { display: flex; align-items: flex-end; gap: 3px; height: 20px; }
+  .brand .mark span { width: 4px; border-radius: 2px; }
+  .brand .mark span:nth-child(1) { height: 8px; background: rgba(255,255,255,0.45); }
+  .brand .mark span:nth-child(2) { height: 14px; background: rgba(255,255,255,0.7); }
+  .brand .mark span:nth-child(3) { height: 20px; background: #8FB0EE; }
+  .brand .name { font-weight: 800; font-size: 18px; color: #fff; letter-spacing: -0.02em; }
+  .nav-links { display: flex; align-items: center; gap: 30px; }
+  .nav-links .link { color: rgba(255,255,255,0.72); font-size: 15px; font-weight: 500; transition: color 0.18s; }
+  .nav-links .link:hover { color: #fff; }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    background: var(--dark);
+    color: #fff;
+    position: relative; overflow: hidden;
+    padding: clamp(64px, 8vw, 104px) 0 clamp(72px, 9vw, 112px);
+  }
+  .hero::before {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(820px 520px at 78% 8%, rgba(11,61,145,0.55), transparent 62%);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: ""; position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size: 30px 30px;
+    -webkit-mask-image: linear-gradient(120deg, #000, transparent 60%);
+    mask-image: linear-gradient(120deg, #000, transparent 60%);
+    pointer-events: none;
+  }
+  .hero-grid {
+    position: relative; z-index: 1;
+    display: grid; grid-template-columns: 1.05fr 0.95fr;
+    gap: clamp(36px, 5vw, 72px); align-items: center;
+  }
+  .hero h1 { font-size: clamp(34px, 5vw, 58px); font-weight: 900; letter-spacing: -0.035em; margin-top: 22px; }
+  .hero h1 .accent { color: #8FB0EE; }
+  .hero .sub { font-size: clamp(17px, 1.7vw, 20px); color: rgba(255,255,255,0.78); margin-top: 24px; max-width: 560px; text-wrap: pretty; }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 13px; margin-top: 34px; }
+
+  /* WhatsApp chat card (hero) */
+  .chat-card {
+    background: #ECE5DD;
+    border-radius: 20px;
+    padding: 16px 14px 18px;
+    box-shadow: 0 30px 70px -30px rgba(0,0,0,0.6);
+    max-width: 400px; margin-left: auto;
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+  .chat-top {
+    display: flex; align-items: center; gap: 11px;
+    background: #075E54; color: #fff;
+    margin: -16px -14px 14px; padding: 13px 16px;
+    border-radius: 20px 20px 0 0;
+  }
+  .chat-top .av { width: 38px; height: 38px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; color: #fff; flex-shrink: 0; }
+  .chat-top .meta .nm { font-weight: 700; font-size: 15px; line-height: 1.2; }
+  .chat-top .meta .st { font-size: 12px; opacity: 0.85; display: flex; align-items: center; gap: 5px; }
+  .chat-top .meta .st .pulse { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 0 0 rgba(74,222,128,0.6); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(74,222,128,0.5);} 70%{box-shadow:0 0 0 8px rgba(74,222,128,0);} 100%{box-shadow:0 0 0 0 rgba(74,222,128,0);} }
+
+  .bubbles { display: flex; flex-direction: column; gap: 9px; }
+  .bubble { max-width: 80%; padding: 9px 12px; border-radius: 12px; font-size: 14.5px; line-height: 1.45; color: #0B1220; position: relative; box-shadow: 0 1px 1px rgba(0,0,0,0.06); }
+  .bubble .t { display: block; font-size: 10.5px; color: rgba(11,18,32,0.45); text-align: right; margin-top: 3px; }
+  .bubble.bot { background: var(--green-bubble); align-self: flex-start; border-top-left-radius: 3px; }
+  .bubble.lead { background: #fff; align-self: flex-end; border-top-right-radius: 3px; }
+
+  /* ---------- Social proof strip ---------- */
+  .proof { background: var(--dark); border-top: 1px solid rgba(255,255,255,0.08); }
+  .proof-inner { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: rgba(255,255,255,0.08); }
+  .proof-cell { background: var(--dark); padding: 22px 24px; display: flex; align-items: center; gap: 12px; }
+  .proof-cell .ck { color: #4ade80; flex-shrink: 0; }
+  .proof-cell .ck svg { width: 18px; height: 18px; }
+  .proof-cell .txt { color: rgba(255,255,255,0.88); font-size: 14.5px; font-weight: 600; }
+
+  /* ---------- Problema ---------- */
+  .problems { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 52px; }
+  .prob {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 14px; padding: 30px 28px;
+    border-top: 3px solid #d14343;
+  }
+  .prob .ico { color: #d14343; margin-bottom: 18px; }
+  .prob .ico svg { width: 24px; height: 24px; }
+  .prob h3 { font-size: 18.5px; font-weight: 700; }
+  .prob p { color: var(--ink-soft); font-size: 15.5px; margin-top: 10px; text-wrap: pretty; }
+
+  /* ---------- Como funciona ---------- */
+  .how { background: var(--surface); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 56px; position: relative; }
+  .step { padding: 0 26px; position: relative; }
+  .step:not(:last-child)::after {
+    content: ""; position: absolute; top: 24px; right: -8px; width: 16px; height: 16px;
+    border-top: 2px solid var(--line); border-right: 2px solid var(--line);
+    transform: rotate(45deg);
+  }
+  .step .n {
+    width: 50px; height: 50px; border-radius: 13px;
+    background: var(--blue-tint); color: var(--blue);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 20px; margin-bottom: 20px;
+  }
+  .step .n svg { width: 23px; height: 23px; }
+  .step h3 { font-size: 18px; font-weight: 700; }
+  .step p { color: var(--ink-soft); font-size: 15px; margin-top: 9px; text-wrap: pretty; }
+
+  /* ---------- Recursos (6 cards) ---------- */
+  .feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 56px; }
+  .feat {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 14px; padding: 28px 26px;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  }
+  .feat:hover { border-color: rgba(11,61,145,0.35); transform: translateY(-3px); box-shadow: 0 16px 38px -24px rgba(11,61,145,0.45); }
+  .feat .ico { width: 46px; height: 46px; border-radius: 11px; background: var(--blue-tint); color: var(--blue); display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+  .feat .ico svg { width: 22px; height: 22px; }
+  .feat h3 { font-size: 18.5px; font-weight: 700; }
+  .feat p { color: var(--ink-soft); font-size: 15px; margin-top: 9px; text-wrap: pretty; }
+
+  /* ---------- Comparativo ---------- */
+  .compare { background: var(--surface); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .cmp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 52px; align-items: start; }
+  .cmp-col { border: 1px solid var(--line); border-radius: 16px; padding: 30px 26px; background: var(--bg); }
+  .cmp-col.featured { background: var(--blue); border-color: var(--blue); color: #fff; box-shadow: 0 26px 60px -28px rgba(11,61,145,0.6); transform: translateY(-6px); }
+  .cmp-col .label { font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint); }
+  .cmp-col.featured .label { color: #B9CDF2; }
+  .cmp-col h3 { font-size: 21px; font-weight: 800; margin: 6px 0 22px; }
+  .cmp-col ul { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+  .cmp-col li { display: flex; gap: 11px; font-size: 15px; line-height: 1.45; color: var(--ink-soft); }
+  .cmp-col li svg { width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px; }
+  .cmp-col.neutral li .mk { color: var(--ink-faint); }
+  .cmp-col.featured li { color: rgba(255,255,255,0.92); }
+  .cmp-col.featured li .mk { color: #6EE7A8; }
+  .cmp-col .badge { display: inline-block; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: rgba(255,255,255,0.16); color: #fff; margin-bottom: 14px; }
+
+  /* ---------- Para quem é / não é ---------- */
+  .fit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 52px; }
+  .fit { border-radius: 16px; padding: 34px 30px; border: 1px solid var(--line); background: var(--surface); }
+  .fit.yes { border-top: 3px solid var(--green); }
+  .fit.no { border-top: 3px solid var(--ink-faint); background: var(--bg); }
+  .fit .h { display: flex; align-items: center; gap: 11px; margin-bottom: 22px; }
+  .fit .h .ico { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+  .fit.yes .h .ico { background: rgba(15,81,50,0.10); color: var(--green); }
+  .fit.no .h .ico { background: rgba(113,119,132,0.12); color: var(--ink-faint); }
+  .fit .h .ico svg { width: 20px; height: 20px; }
+  .fit .h h3 { font-size: 19px; font-weight: 700; }
+  .fit ul { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+  .fit li { display: flex; gap: 11px; font-size: 15.5px; color: var(--ink-soft); line-height: 1.45; }
+  .fit li svg { width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px; }
+  .fit.yes li svg { color: var(--green); }
+  .fit.no li svg { color: var(--ink-faint); }
+
+  /* ---------- Demo + FAQ ---------- */
+  .demo { background: var(--surface); border-top: 1px solid var(--line); }
+  .demo-grid { display: grid; grid-template-columns: 360px 1fr; gap: clamp(40px, 5vw, 72px); margin-top: 52px; align-items: start; }
+
+  /* phone frame */
+  .phone-wrap { position: sticky; top: 90px; }
+  .demo-badge { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--blue); background: var(--blue-tint); padding: 7px 13px; border-radius: 999px; margin-bottom: 18px; }
+  .demo-badge svg { width: 15px; height: 15px; }
+  .phone {
+    width: 340px; margin: 0 auto;
+    background: #0B1220; border-radius: 40px; padding: 12px;
+    box-shadow: 0 40px 80px -30px rgba(11,18,32,0.55);
+  }
+  .phone-screen { background: #ECE5DD; border-radius: 30px; overflow: hidden; }
+  .phone-hd { background: #075E54; color: #fff; padding: 14px 16px; display: flex; align-items: center; gap: 11px; }
+  .phone-hd .av { width: 40px; height: 40px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-weight: 800; color: #fff; flex-shrink: 0; }
+  .phone-hd .nm { font-weight: 700; font-size: 15px; line-height: 1.2; }
+  .phone-hd .st { font-size: 11.5px; opacity: 0.85; }
+  .phone-body {
+    padding: 16px 12px; display: flex; flex-direction: column; gap: 9px;
+    height: 470px; overflow-y: auto;
+    background-image: linear-gradient(rgba(236,229,221,0.6), rgba(236,229,221,0.6)), radial-gradient(rgba(11,18,32,0.04) 1px, transparent 1px);
+    background-size: auto, 18px 18px;
+  }
+  .phone-body .bubble { max-width: 84%; }
+
+  /* FAQ */
+  .faq { display: flex; flex-direction: column; }
+  .faq h2 { font-size: clamp(26px, 3vw, 36px); margin-bottom: 8px; }
+  .faq-sub { color: var(--ink-soft); margin-bottom: 26px; }
+  .faq-item { border-bottom: 1px solid var(--line); }
+  .faq-q {
+    width: 100%; text-align: left; background: none; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 22px 0; font-family: inherit; font-size: 17.5px; font-weight: 600; color: var(--ink);
+  }
+  .faq-q .sign { flex-shrink: 0; width: 26px; height: 26px; position: relative; transition: transform 0.25s; color: var(--blue); }
+  .faq-q .sign::before, .faq-q .sign::after { content: ""; position: absolute; background: currentColor; border-radius: 2px; }
+  .faq-q .sign::before { top: 12px; left: 4px; width: 18px; height: 2px; }
+  .faq-q .sign::after { top: 4px; left: 12px; width: 2px; height: 18px; transition: transform 0.25s, opacity 0.25s; }
+  .faq-item.open .faq-q .sign::after { transform: rotate(90deg); opacity: 0; }
+  .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+  .faq-a-inner { padding: 0 0 24px; color: var(--ink-soft); font-size: 16px; max-width: 620px; text-wrap: pretty; }
+  .faq-item.open .faq-a { max-height: 320px; }
+
+  /* ---------- CTA final ---------- */
+  .final { background: var(--dark); color: #fff; position: relative; overflow: hidden; }
+  .final::before { content: ""; position: absolute; inset: 0; background: radial-gradient(700px 400px at 80% 20%, rgba(11,61,145,0.55), transparent 60%); pointer-events: none; }
+  .final-inner { position: relative; z-index: 1; text-align: center; max-width: 760px; margin: 0 auto; }
+  .final h2 { font-size: clamp(30px, 4.2vw, 50px); font-weight: 900; letter-spacing: -0.03em; }
+  .final p { color: rgba(255,255,255,0.8); font-size: 19px; margin-top: 18px; }
+  .final-cta { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-top: 36px; }
+
+  /* ---------- Footer ---------- */
+  footer.foot { background: var(--dark); border-top: 1px solid rgba(255,255,255,0.08); }
+  .foot-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; padding: 30px 0; }
+  .foot .tagline { color: rgba(255,255,255,0.55); font-size: 14px; }
+  .foot .copy { color: rgba(255,255,255,0.4); font-size: 13px; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 940px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .chat-card { margin: 0 auto; }
+    .proof-inner { grid-template-columns: 1fr 1fr; }
+    .problems { grid-template-columns: 1fr; }
+    .steps { grid-template-columns: 1fr 1fr; row-gap: 36px; }
+    .step:not(:last-child)::after { display: none; }
+    .feat-grid { grid-template-columns: 1fr 1fr; }
+    .cmp-grid { grid-template-columns: 1fr; }
+    .cmp-col.featured { transform: none; }
+    .fit-grid { grid-template-columns: 1fr; }
+    .demo-grid { grid-template-columns: 1fr; }
+    .phone-wrap { position: static; }
+  }
+  @media (max-width: 600px) {
+    body { font-size: 16px; }
+    .wrap { padding: 0 20px; }
+    .nav-links .link { display: none; }
+    .proof-inner { grid-template-columns: 1fr; }
+    .steps { grid-template-columns: 1fr; }
+    .feat-grid { grid-template-columns: 1fr; }
+    .phone, .chat-card { width: 100%; max-width: 360px; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- ===================== NAV ===================== -->
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="#top" aria-label="Data Scale">
+        <span class="mark" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span class="name">Data Scale</span>
+      </a>
+      <nav class="nav-links">
+        <a class="link" href="#problema">O problema</a>
+        <a class="link" href="#plataforma">A plataforma</a>
+        <a class="link" href="#comparativo">Por que nós</a>
+        <a class="link" href="#faq">Dúvidas</a>
+        <a class="btn btn-ghost on-dark" href="https://calendly.com/contato-datascaleconsultoria/30min" target="_blank" rel="noopener">Agendar demo</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===================== HERO ===================== -->
+  <section class="hero" id="top">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <span class="eyebrow on-dark">Atendimento WhatsApp com IA · Imobiliárias</span>
+        <h1>Sua imobiliária vendendo no WhatsApp, <span class="accent">sem perder lead por falta de resposta.</span></h1>
+        <p class="sub">Uma plataforma de IA pronta e em produção que atende seus leads 24/7, consulta seu estoque em tempo real, agenda visitas e entrega tudo num painel onde sua equipe assume quando precisar.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="https://calendly.com/contato-datascaleconsultoria/30min" target="_blank" rel="noopener">
+            Agendar demo de 20 min
+            <i data-lucide="arrow-right"></i>
+          </a>
+          <a class="btn btn-ghost on-dark" href="#como-funciona">Como funciona</a>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="chat-card" role="img" aria-label="Exemplo de conversa de WhatsApp atendida pela IA">
+          <div class="chat-top">
+            <div class="av">I</div>
+            <div class="meta">
+              <div class="nm">Imobiliária · IA</div>
+              <div class="st"><span class="pulse"></span> online · responde na hora</div>
+            </div>
+          </div>
+          <div class="bubbles">
+            <div class="bubble lead">Tem apartamento de 2 dorms na Vila Mariana? <span class="t">22:14</span></div>
+            <div class="bubble bot">Temos sim! Apto na Rua Joaquim Távora — 2 dorms (1 suíte), 1 vaga, R$ 720.000. Quer ver as fotos e agendar uma visita? <span class="t">22:14</span></div>
+            <div class="bubble lead">Quero, pode ser quinta à noite <span class="t">22:15</span></div>
+            <div class="bubble bot">Agendado com o corretor Ricardo: quinta, 04/06 às 19h. Ele já recebeu sua ficha e confirma 2h antes. <span class="t">22:15</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SOCIAL PROOF ===================== -->
+  <section class="proof">
+    <div class="wrap">
+      <div class="proof-inner">
+        <div class="proof-cell"><span class="ck"><i data-lucide="zap"></i></span><span class="txt">&lt;30s de resposta</span></div>
+        <div class="proof-cell"><span class="ck"><i data-lucide="moon"></i></span><span class="txt">24/7 sem plantão</span></div>
+        <div class="proof-cell"><span class="ck"><i data-lucide="database"></i></span><span class="txt">100% dos leads registrados</span></div>
+        <div class="proof-cell"><span class="ck"><i data-lucide="rocket"></i></span><span class="txt">2 semanas para subir</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PROBLEMA ===================== -->
+  <section class="section" id="problema">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">O problema</span>
+        <h2>O lead chega. A resposta não.</h2>
+        <p>No mercado imobiliário, quem responde primeiro costuma fechar. E é justamente aí que o WhatsApp da sua imobiliária está vazando venda.</p>
+      </div>
+      <div class="problems">
+        <div class="prob">
+          <div class="ico"><i data-lucide="clock-alert"></i></div>
+          <h3>Lead chega de madrugada</h3>
+          <p>O anúncio roda 24h, mas o atendimento para às 18h. O lead manda mensagem às 22h, ninguém responde, e às 23h ele já falou com o concorrente.</p>
+        </div>
+        <div class="prob">
+          <div class="ico"><i data-lucide="messages-square"></i></div>
+          <h3>Corretor com 80 conversas abertas</h3>
+          <p>Entre visitas e ligações, ninguém dá conta de responder todo mundo a tempo. As conversas se acumulam e os melhores leads esfriam.</p>
+        </div>
+        <div class="prob">
+          <div class="ico"><i data-lucide="refresh-cw-off"></i></div>
+          <h3>Estoque muda toda hora</h3>
+          <p>Imóvel que vendeu, preço que mudou, unidade que reservou. Sem consulta em tempo real, o cliente recebe informação errada — ou nenhuma.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== COMO FUNCIONA ===================== -->
+  <section class="section how" id="como-funciona">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Como funciona</span>
+        <h2>Do primeiro "oi" à visita agendada.</h2>
+        <p>A IA assume a conversa do começo e só passa para o corretor quando faz sentido — com todo o histórico na mão.</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="n">1</div>
+          <h3>Lead chega</h3>
+          <p>Mensagem cai no WhatsApp da imobiliária a qualquer hora, vinda de anúncio, site ou indicação.</p>
+        </div>
+        <div class="step">
+          <div class="n">2</div>
+          <h3>IA atende e qualifica</h3>
+          <p>Responde na hora, entende o que o lead procura, consulta o estoque e mostra os imóveis certos.</p>
+        </div>
+        <div class="step">
+          <div class="n">3</div>
+          <h3>Agenda a visita</h3>
+          <p>Oferece horários livres e marca direto na agenda do corretor, com confirmação automática.</p>
+        </div>
+        <div class="step">
+          <div class="n">4</div>
+          <h3>Corretor assume</h3>
+          <p>Recebe a ficha completa do lead e entra na conversa quando quiser — sem perder nada do histórico.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== O QUE A PLATAFORMA FAZ ===================== -->
+  <section class="section" id="plataforma">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">A plataforma</span>
+        <h2>Tudo que sua operação de WhatsApp precisa, num lugar só.</h2>
+        <p>Uma plataforma própria, em produção, configurada para a sua imobiliária — não um projeto que começa do zero.</p>
+      </div>
+      <div class="feat-grid">
+        <div class="feat">
+          <div class="ico"><i data-lucide="message-circle"></i></div>
+          <h3>Atende no WhatsApp 24/7</h3>
+          <p>Responde cada lead em segundos, a qualquer hora, com a linguagem da sua imobiliária.</p>
+        </div>
+        <div class="feat">
+          <div class="ico"><i data-lucide="building-2"></i></div>
+          <h3>Consulta seu estoque</h3>
+          <p>Busca imóveis em tempo real na sua planilha, CRM ou sistema — preço, status e detalhes sempre atualizados.</p>
+        </div>
+        <div class="feat">
+          <div class="ico"><i data-lucide="calendar-check"></i></div>
+          <h3>Agenda no Google Calendar</h3>
+          <p>Marca visitas direto na agenda do corretor, respeitando horários livres e enviando confirmação.</p>
+        </div>
+        <div class="feat">
+          <div class="ico"><i data-lucide="user-round-cog"></i></div>
+          <h3>Handoff humano em 1 clique</h3>
+          <p>O corretor assume a conversa quando quiser, com todo o histórico — o lead nem percebe a troca.</p>
+        </div>
+        <div class="feat">
+          <div class="ico"><i data-lucide="contact-round"></i></div>
+          <h3>CRM e insights embutidos</h3>
+          <p>Ficha de cada lead: status, faixa de preço, bairros de interesse e o que está procurando.</p>
+        </div>
+        <div class="feat">
+          <div class="ico"><i data-lucide="sliders-horizontal"></i></div>
+          <h3>Configurável sem programador</h3>
+          <p>Ajuste mensagens, regras e fluxos pelo painel admin. Sua equipe no controle, sem depender de TI.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== COMPARATIVO ===================== -->
+  <section class="section compare" id="comparativo">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Por que não construir do zero</span>
+        <h2>Você não precisa de um projeto de 6 meses. Precisa atender hoje.</h2>
+        <p>Compare os caminhos para colocar IA no atendimento da sua imobiliária.</p>
+      </div>
+      <div class="cmp-grid">
+        <div class="cmp-col neutral">
+          <span class="label">Opção A</span>
+          <h3>Construir interno</h3>
+          <ul>
+            <li><span class="mk"><i data-lucide="minus"></i></span> 6+ meses até a primeira versão</li>
+            <li><span class="mk"><i data-lucide="minus"></i></span> Precisa de time técnico: dev backend, IA e integração WhatsApp</li>
+            <li><span class="mk"><i data-lucide="minus"></i></span> Manutenção e evolução viram custo fixo da empresa</li>
+            <li><span class="mk"><i data-lucide="minus"></i></span> Risco alto de não terminar</li>
+          </ul>
+        </div>
+        <div class="cmp-col neutral">
+          <span class="label">Opção B</span>
+          <h3>Chatbot genérico (no-code)</h3>
+          <ul>
+            <li><span class="mk"><i data-lucide="minus"></i></span> Sobe rápido, mas trava em conversa real</li>
+            <li><span class="mk"><i data-lucide="minus"></i></span> Não consulta seu estoque de imóveis de verdade</li>
+            <li><span class="mk"><i data-lucide="minus"></i></span> Sem painel de atendimento humano integrado</li>
+            <li><span class="mk"><i data-lucide="minus"></i></span> IA limitada, não responde sobre seus documentos</li>
+          </ul>
+        </div>
+        <div class="cmp-col featured">
+          <span class="badge">Recomendado</span>
+          <span class="label">Opção C</span>
+          <h3>Data Scale</h3>
+          <ul>
+            <li><span class="mk"><i data-lucide="check"></i></span> Em produção em 2 semanas</li>
+            <li><span class="mk"><i data-lucide="check"></i></span> Plataforma pronta + customização para sua operação</li>
+            <li><span class="mk"><i data-lucide="check"></i></span> Integra com seu estoque, CRM e Google Calendar</li>
+            <li><span class="mk"><i data-lucide="check"></i></span> Painel de atendimento humano com handoff</li>
+            <li><span class="mk"><i data-lucide="check"></i></span> Evolução contínua incluída na mensalidade</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PARA QUEM É / NÃO É ===================== -->
+  <section class="section" id="para-quem">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Para quem é</span>
+        <h2>Honestidade antes da demo.</h2>
+        <p>A plataforma resolve muito — mas não é para todo mundo. Veja se faz sentido para a sua operação.</p>
+      </div>
+      <div class="fit-grid">
+        <div class="fit yes">
+          <div class="h">
+            <span class="ico"><i data-lucide="check"></i></span>
+            <h3>É para você se…</h3>
+          </div>
+          <ul>
+            <li><i data-lucide="check"></i> Sua imobiliária tem de 5 a 50 corretores</li>
+            <li><i data-lucide="check"></i> Chega volume real de leads pelo WhatsApp</li>
+            <li><i data-lucide="check"></i> Você perde venda por demora na resposta</li>
+            <li><i data-lucide="check"></i> Não tem (e não quer montar) um time de TI interno</li>
+          </ul>
+        </div>
+        <div class="fit no">
+          <div class="h">
+            <span class="ico"><i data-lucide="x"></i></span>
+            <h3>Não é para você se…</h3>
+          </div>
+          <ul>
+            <li><i data-lucide="x"></i> Você é corretor autônomo, com baixo volume</li>
+            <li><i data-lucide="x"></i> Quer apenas um chatbot básico de respostas prontas</li>
+            <li><i data-lucide="x"></i> Não trabalha leads pelo WhatsApp</li>
+            <li><i data-lucide="x"></i> Não pretende agendar visitas nem qualificar leads</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== DEMO + FAQ ===================== -->
+  <section class="section demo" id="faq">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Demo &amp; dúvidas</span>
+        <h2>Veja a conversa. Tire as dúvidas.</h2>
+        <p>Um exemplo real do fluxo de atendimento — e as perguntas que todo diretor comercial faz antes de fechar.</p>
+      </div>
+
+      <div class="demo-grid">
+        <!-- phone -->
+        <div class="phone-wrap">
+          <span class="demo-badge"><i data-lucide="badge-check"></i> Lead → agendamento em 4 minutos</span>
+          <div class="phone">
+            <div class="phone-screen">
+              <div class="phone-hd">
+                <div class="av">I</div>
+                <div>
+                  <div class="nm">Imobiliária X · IA</div>
+                  <div class="st">online</div>
+                </div>
+              </div>
+              <div class="phone-body">
+                <div class="bubble lead">Boa noite, vi o anúncio do apartamento na Vila Mariana de 75m² <span class="t">22:08</span></div>
+                <div class="bubble bot">Boa noite, Marcelo! Esse é o apto da Rua Joaquim Távora, 580 — 2 dorms (1 suíte), 1 vaga, R$ 720.000. Quer ver as fotos e a planta? <span class="t">22:08</span></div>
+                <div class="bubble lead">Quero, e queria visitar nessa semana <span class="t">22:09</span></div>
+                <div class="bubble bot">Posso agendar com o corretor Ricardo. Tem horário: quarta 18h, quinta 19h ou sábado 11h. Qual prefere? <span class="t">22:09</span></div>
+                <div class="bubble lead">Quinta 19h <span class="t">22:10</span></div>
+                <div class="bubble bot">Marcado ✓ Quinta, 04/06 às 19h. Vou te enviar a localização e confirmar 2h antes. Ricardo já recebeu sua ficha e vai te ligar amanhã. <span class="t">22:10</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="faq">
+          <div class="faq-item">
+            <button class="faq-q">Conecta com qual CRM?<span class="sign" aria-hidden="true"></span></button>
+            <div class="faq-a"><div class="faq-a-inner">Já temos integração com Vista, Sienge CRM, Pipedrive, HubSpot e Bitrix. Se você usa outro, integramos via API ou planilha — sem custo extra de desenvolvimento.</div></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q">Funciona com o sistema de imóveis que já uso?<span class="sign" aria-hidden="true"></span></button>
+            <div class="faq-a"><div class="faq-a-inner">Sim. Consumimos sua base de imóveis por API, banco de dados ou planilha sincronizada. Você não precisa trocar de sistema.</div></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q">Quanto tempo para subir em produção?<span class="sign" aria-hidden="true"></span></button>
+            <div class="faq-a"><div class="faq-a-inner">Implantação típica de 2 semanas. Semana 1: conexão e configuração. Semana 2: ajuste de fluxos com o seu time e treinamento.</div></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q">E se a IA errar com um lead importante?<span class="sign" aria-hidden="true"></span></button>
+            <div class="faq-a"><div class="faq-a-inner">Você define os gatilhos de handoff — palavra-chave, valor do imóvel ou sentimento. Quando aciona, o corretor recebe a conversa no painel e assume, sem o lead perceber.</div></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q">Onde meus dados ficam armazenados?<span class="sign" aria-hidden="true"></span></button>
+            <div class="faq-a"><div class="faq-a-inner">No seu próprio banco (sua conta de cloud) ou na infraestrutura da Data Scale, conforme você preferir. Tudo conforme a LGPD, com logs auditáveis.</div></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q">Quanto custa?<span class="sign" aria-hidden="true"></span></button>
+            <div class="faq-a"><div class="faq-a-inner">Modelo de implantação única + mensalidade. O valor depende do volume de leads e de quantas integrações você precisa. Numa demo de 20 minutos fechamos um valor para a sua operação.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CTA FINAL ===================== -->
+  <section class="section final" id="cta">
+    <div class="wrap final-inner">
+      <span class="eyebrow on-dark">Agende sua demo</span>
+      <h2>20 minutos para ver funcionando com os seus imóveis.</h2>
+      <p>Mostramos a plataforma rodando, conectamos um exemplo do seu estoque e fechamos um valor para a sua operação. Sem compromisso.</p>
+      <div class="final-cta">
+        <a class="btn btn-white" href="https://calendly.com/contato-datascaleconsultoria/30min" target="_blank" rel="noopener">
+          Agendar demo de 20 min
+          <i data-lucide="arrow-right"></i>
+        </a>
+        <a class="btn btn-ghost on-dark" href="https://api.whatsapp.com/send/?phone=%2B5547989171843&text=Olá%2C+tudo+bem%3F+Gostaria+de+mais+informações.&type=phone_number&app_absent=0" target="_blank" rel="noopener">
+          Falar no WhatsApp
+          <i data-lucide="arrow-up-right"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="foot">
+    <div class="wrap foot-inner">
+      <a class="brand" href="#top" aria-label="Data Scale">
+        <span class="mark" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span class="name">Data Scale</span>
+      </a>
+      <span class="tagline">Atendimento WhatsApp com IA para imobiliárias.</span>
+      <span class="copy">datascaleconsultoria.com</span>
+    </div>
+  </footer>
+
+  <script>
+    // FAQ accordion
+    document.querySelectorAll(".faq-q").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var item = btn.closest(".faq-item");
+        var isOpen = item.classList.contains("open");
+        document.querySelectorAll(".faq-item.open").forEach(function (o) { o.classList.remove("open"); });
+        if (!isOpen) item.classList.add("open");
+      });
+    });
+    // open first by default
+    var first = document.querySelector(".faq-item");
+    if (first) first.classList.add("open");
+
+    if (window.lucide && typeof lucide.createIcons === "function") {
+      lucide.createIcons();
+    }
+  </script>
+</body>
+</html>
