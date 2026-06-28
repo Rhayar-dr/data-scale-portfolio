@@ -186,50 +186,62 @@
                             <span class="w-3 h-3 rounded-full bg-red-400"></span>
                             <span class="w-3 h-3 rounded-full bg-amber-400"></span>
                             <span class="w-3 h-3 rounded-full bg-green-400"></span>
-                            <span class="ml-3 text-xs text-gray-400 truncate">o seu sistema · painel sob medida</span>
+                            <span class="ml-3 text-xs text-gray-400 truncate">o seu sistema · feito sob medida</span>
+                            <span class="ml-auto inline-flex items-center gap-1 text-[10px] text-ds-green font-medium"><span class="w-1.5 h-1.5 rounded-full bg-ds-green"></span>no ar</span>
                         </div>
                         <div class="flex h-[380px] text-left">
-                            <div class="w-1/3 border-r border-gray-200 bg-gray-50 p-3 space-y-1 text-xs">
-                                <div class="px-2 py-1.5 rounded-md bg-ds-teal text-white font-semibold">Visão geral</div>
-                                <div class="px-2 py-1.5 rounded-md text-gray-600">Clientes</div>
-                                <div class="px-2 py-1.5 rounded-md text-gray-600">Pedidos</div>
-                                <div class="px-2 py-1.5 rounded-md text-gray-600">Financeiro</div>
+                            <!-- sidebar: módulos -->
+                            <div class="w-1/4 border-r border-gray-200 bg-gray-50 p-2.5 space-y-1 text-[11px]">
+                                <div class="px-2 py-1.5 rounded-md bg-ds-teal text-white font-semibold">Processos</div>
+                                <div class="px-2 py-1.5 rounded-md text-gray-600">Automações</div>
+                                <div class="px-2 py-1.5 rounded-md text-gray-600">Integrações</div>
+                                <div class="px-2 py-1.5 rounded-md text-gray-600">Equipe</div>
                                 <div class="px-2 py-1.5 rounded-md text-gray-600">Relatórios</div>
-                                <div class="mt-3 pt-3 border-t border-gray-200 text-[10px] text-gray-400 leading-snug">Feito sob medida para o seu negócio</div>
                             </div>
-                            <div class="flex-1 p-4 space-y-3 overflow-hidden">
-                                <div class="grid grid-cols-2 gap-3">
-                                    <div class="rounded-lg border border-gray-200 p-3">
-                                        <p class="text-[10px] text-gray-400">Faturamento</p>
-                                        <p class="text-lg font-bold text-ds-dark">R$ 128k</p>
-                                        <p class="text-[10px] text-ds-green">▲ 12% no mês</p>
+                            <!-- main -->
+                            <div class="flex-1 p-3.5 space-y-3 overflow-hidden">
+                                <!-- mini kanban de processos -->
+                                <div class="grid grid-cols-3 gap-2">
+                                    <div class="space-y-1.5">
+                                        <p class="text-[9px] uppercase tracking-wide text-gray-400 font-semibold">A fazer</p>
+                                        <div class="rounded-md border border-gray-200 bg-white p-2 text-[10px] text-gray-600 shadow-sm">Cadastrar contrato</div>
+                                        <div class="rounded-md border border-gray-200 bg-white p-2 text-[10px] text-gray-600 shadow-sm">Revisar proposta</div>
                                     </div>
-                                    <div class="rounded-lg border border-gray-200 p-3">
-                                        <p class="text-[10px] text-gray-400">Clientes ativos</p>
-                                        <p class="text-lg font-bold text-ds-dark">342</p>
-                                        <p class="text-[10px] text-ds-green">▲ 8 novos</p>
+                                    <div class="space-y-1.5">
+                                        <p class="text-[9px] uppercase tracking-wide text-gray-400 font-semibold">Em andamento</p>
+                                        <div class="rounded-md border border-gray-200 border-l-2 border-l-ds-teal bg-white p-2 text-[10px] text-gray-700 shadow-sm">Onboarding cliente</div>
                                     </div>
-                                </div>
-                                <div class="rounded-lg border border-gray-200 p-3">
-                                    <p class="text-[10px] text-gray-400 mb-2">Vendas por mês</p>
-                                    <div class="flex items-end gap-1.5 h-20">
-                                        <div class="flex-1 bg-ds-teal/30 rounded-t" style="height:40%"></div>
-                                        <div class="flex-1 bg-ds-teal/40 rounded-t" style="height:58%"></div>
-                                        <div class="flex-1 bg-ds-teal/50 rounded-t" style="height:46%"></div>
-                                        <div class="flex-1 bg-ds-teal/60 rounded-t" style="height:72%"></div>
-                                        <div class="flex-1 bg-ds-teal/70 rounded-t" style="height:64%"></div>
-                                        <div class="flex-1 bg-ds-teal rounded-t" style="height:90%"></div>
+                                    <div class="space-y-1.5">
+                                        <p class="text-[9px] uppercase tracking-wide text-gray-400 font-semibold">Concluído</p>
+                                        <div class="rounded-md border border-gray-200 bg-gray-50 p-2 text-[10px] text-gray-400 line-through">Emitir nota</div>
                                     </div>
                                 </div>
-                                <div class="rounded-lg border border-gray-200 divide-y divide-gray-100 text-xs">
-                                    <div class="flex justify-between px-3 py-2"><span class="text-gray-600">Pedido #1042</span><span class="text-ds-green font-medium">concluído</span></div>
-                                    <div class="flex justify-between px-3 py-2"><span class="text-gray-600">Pedido #1041</span><span class="text-amber-600 font-medium">em rota</span></div>
+                                <!-- automação -->
+                                <div class="rounded-lg border border-gray-200 p-2.5">
+                                    <p class="text-[9px] uppercase tracking-wide text-gray-400 font-semibold mb-2">Automação</p>
+                                    <div class="flex items-center gap-1.5 text-[10px]">
+                                        <span class="px-2 py-1 rounded bg-ds-teal/10 text-ds-teal-dark font-medium">Gatilho</span>
+                                        <span class="text-gray-300">&rarr;</span>
+                                        <span class="px-2 py-1 rounded bg-ds-teal/10 text-ds-teal-dark font-medium">Ação</span>
+                                        <span class="text-gray-300">&rarr;</span>
+                                        <span class="px-2 py-1 rounded bg-ds-green/10 text-ds-green-dark font-medium">Notifica</span>
+                                    </div>
+                                </div>
+                                <!-- integrações -->
+                                <div class="rounded-lg border border-gray-200 p-2.5">
+                                    <p class="text-[9px] uppercase tracking-wide text-gray-400 font-semibold mb-2">Integrações conectadas</p>
+                                    <div class="flex flex-wrap gap-1.5 text-[10px]">
+                                        <span class="px-2 py-1 rounded-full border border-gray-200 text-gray-600">ERP &check;</span>
+                                        <span class="px-2 py-1 rounded-full border border-gray-200 text-gray-600">WhatsApp &check;</span>
+                                        <span class="px-2 py-1 rounded-full border border-gray-200 text-gray-600">Google &check;</span>
+                                        <span class="px-2 py-1 rounded-full border border-gray-200 text-gray-600">Planilhas &check;</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <p class="mt-3 text-center text-xs text-gray-400">Exemplo de painel sob medida — cada sistema é
-                        desenhado para a operação do cliente.</p>
+                    <p class="mt-3 text-center text-xs text-gray-400">Cada sistema é desenhado sob medida — processos,
+                        automações e integrações da sua operação.</p>
                 </div>
             </div>
         </div>
